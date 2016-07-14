@@ -58,17 +58,17 @@ object Main {
   def countChange(money: Int, coins: List[Int]): Int = {
     // Given a list of current states, return a list of all possible states after adding a coin
     // to each current state
-    def addCoin(currentMoney: List[Int]): List[List[Int]] =
-      // The if-else guard statement ensures we only update state with money < 4
-      coins map (x => if (currentMoney.sum < 4) (x::currentMoney) sortWith(_<_) else currentMoney)
+    def addCoin(currentMoneyState: List[Int]): List[List[Int]] =
+      // The if-else guard statement ensures we only update state with less than specified amount of money
+      coins map (x => if (currentMoneyState.sum < money) (x::currentMoneyState) sortWith(_<_) else currentMoneyState)
 
     // Main counting function
-    def count(res: List[List[Int]]): Int =
-      if (res.exists(_.sum < 4))
-        count(res flatMap addCoin _ distinct)
+    def count(currentMoneyStates: List[List[Int]]): Int =
+      if (currentMoneyStates.exists(_.sum < money))
+        count(currentMoneyStates flatMap addCoin _ distinct)
       else
-        // Get the number of all states that have exactly 4 money
-        res.count(_.sum == 4)
+        // Get the number of all states that have exactly specified amount of money
+        currentMoneyStates.count(_.sum == money)
 
     // Start counting from no coins, so initial state is an empty List.
     // We wrap the initial state in an outer list (List Monad) in order to apply addCoin action using flatMap
