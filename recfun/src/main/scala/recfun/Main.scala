@@ -26,9 +26,11 @@ object Main {
    * Exercise 2
    */
   def balance(chars: List[Char]): Boolean = {
+    // Check if the counts of opening and closing parentheses match
     def countBalance(): Boolean =
       chars.count(_ == '(') == chars.count(_ == ')')
 
+    // Check if the order of parentheses is correct
     def orderBalance(): Boolean = {
       def checkOrder(acc: List[Char], chars: List[Char]): Boolean = {
         chars match {
@@ -44,6 +46,9 @@ object Main {
       checkOrder(List[Char](), chars)
     }
 
+    // Parentheses in a string are balanced if:
+    // 1. the number of opening and closing parentheses are equal
+    // 2. the order of opening and closing parentheses are correct
     countBalance() && orderBalance()
   }
 
@@ -51,17 +56,22 @@ object Main {
    * Exercise 3
    */
   def countChange(money: Int, coins: List[Int]): Int = {
-    // Action to bind to previous state
-    def add(currentMoney: List[Int], coins: List[Int]): List[List[Int]] =
-      coins.map(x => if (currentMoney.sum < 4) (x::currentMoney).sortWith(_<_) else currentMoney)
+    // Given a list of current states, return a list of all possible states after adding a coin
+    // to each current state
+    def addCoin(currentMoney: List[Int]): List[List[Int]] =
+      // The if-else guard statement ensures we only update state with money < 4
+      coins map (x => if (currentMoney.sum < 4) (x::currentMoney) sortWith(_<_) else currentMoney)
 
-    // Start counting
+    // Main counting function
     def count(res: List[List[Int]]): Int =
       if (res.exists(_.sum < 4))
-        count(res.flatMap(add(_, coins)).distinct)
+        count(res flatMap addCoin _ distinct)
       else
+        // Get the number of all states that have exactly 4 money
         res.count(_.sum == 4)
 
+    // Start counting from no coins, so initial state is an empty List.
+    // We wrap the initial state in an outer list (List Monad) in order to apply addCoin action using flatMap
     count(List(List()))
   }
 }
