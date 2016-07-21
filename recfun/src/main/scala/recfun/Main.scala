@@ -55,17 +55,20 @@ object Main {
   /**
    * Exercise 3
    */
+  type MoneyState = List[Int]
+
   def countChange(money: Int, coins: List[Int]): Int = {
     // Given a list of current states, return a list of all possible states after adding a coin
     // to each current state
-    def addCoin(currentMoneyState: List[Int]): List[List[Int]] =
+    def addCoin(currentMoneyState: MoneyState): List[MoneyState] =
       // The if-else guard statement ensures we only update state with less than specified amount of money
       coins map (x => if (currentMoneyState.sum < money) (x::currentMoneyState) sortWith(_<_) else currentMoneyState)
 
     // Main counting function
-    def count(currentMoneyStates: List[List[Int]]): Int =
+    def count(currentMoneyStates: List[MoneyState]): Int =
       if (currentMoneyStates.exists(_.sum < money))
-        count(currentMoneyStates flatMap addCoin _ distinct)
+        // Add a coin to each current state and generate all possible resultant states
+        count(currentMoneyStates flatMap addCoin distinct)
       else
         // Get the number of all states that have exactly specified amount of money
         currentMoneyStates.count(_.sum == money)
